@@ -35,6 +35,7 @@
 		2A358B6524F3BEC8008ABD8B /* ScanHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanHandler.swift; sourceTree = "<group>"; };
 		2A358B6A24F3BF54008ABD8B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		2A358B6C24F414FC008ABD8B /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		2A358B6E24F42ED6008ABD8B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +53,7 @@
 		2A30B7B624F3847500856F2D = {
 			isa = PBXGroup;
 			children = (
+				2A358B6E24F42ED6008ABD8B /* README.md */,
 				2A30B7C124F3847500856F2D /* SalmonDayoffScanner */,
 				2A30B7C024F3847500856F2D /* Products */,
 			);
