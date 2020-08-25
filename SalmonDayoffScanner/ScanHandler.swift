@@ -49,7 +49,7 @@ func handleScan (
             } else {
               safeScreenUpdate(.InvalidDirection)
             }
-          case let .failure(err):
+          case .failure:
             guard
               let data = res.data,
               let resp = try? JSONDecoder().decode(LMFailedResponse.self, from: data)
