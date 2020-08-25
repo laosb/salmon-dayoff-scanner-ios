@@ -122,7 +122,10 @@ struct ContentView: View {
           if orientation == .landscapeRight { cameraHints }
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
       } else {
-        Text("为方便扫码，请不要平放 iPad。")
+        VStack {
+          Text("为方便扫码，请不要平放 iPad。")
+          Text("如必须平放，请先竖起 iPad 并转动来选择一个方向，然后锁定屏幕旋转后再放平。")
+        }
       }
     }
       .background(bgColor)
