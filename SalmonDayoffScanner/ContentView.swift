@@ -7,12 +7,14 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
   @State var orientation: UIDeviceOrientation = UIDevice.current.orientation
 
   @State private var status: SDSScreenStatus = .Initialized
   @State private var settings = SDSSettings.get()
+  @State private var synth = AVSpeechSynthesizer()
 
   var statusInfo: StatusInfo { getStatusInfoFor(status) }
   var bgColor: Color {
@@ -66,6 +68,7 @@ struct ContentView: View {
       guard !self.statusInfo.hideScanning else { return }
       switch res {
       case let .success(str):
+        synth.stopSpeaking(at: .immediate)
         handleScan(
           str,
           with: settings,
@@ -78,9 +81,13 @@ struct ContentView: View {
             }
 
             switch $0 {
-            case .SystemError, .Unauthorized: self.settings.stats?.error += 1
-            case .CheckInSuccess, .CheckOutSuccess: self.settings.stats?.success += 1
-            case .InvalidTicket, .InvalidDirection: self.settings.stats?.fail += 1
+            case .SystemError, .Unauthorized: settings.stats?.error += 1
+            case .CheckInSuccess, .CheckOutSuccess:
+              settings.stats?.success += 1
+              synth.speak(.init(string: "验证通过"))
+            case .InvalidTicket, .InvalidDirection:
+              settings.stats?.fail += 1
+              synth.speak(.init(string: "禁止通行"))
             default: print("counting nothing")
             }
             self.settings.persist()
