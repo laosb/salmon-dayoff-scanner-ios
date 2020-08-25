@@ -29,11 +29,17 @@ func handleScan (
         DispatchQueue.main.async { onScreenUpdate(status) }
       }
 
+      let decoder = JSONDecoder()
+      decoder.dateDecodingStrategy = .iso8601
+
       AF.request("\(apiBaseUrl)/workflow/dayoff/management/ticket?uid=\(ticket)", headers: headers)
-        .validate().responseDecodable(of: SDSDayoffTicketResponse.self) { res in
+        .validate().responseDecodable(
+          of: SDSDayoffTicketResponse.self,
+          decoder: decoder
+        ) { res in
           switch res.result {
           case let .success(resp):
-            let noRecord = resp.data.dayOff.Direction != .NoRecord
+            let noRecord = resp.data.dayOff.Direction == .NoRecord
             let inThenOut = resp.data.dayOff.Direction == .In && settings.direction == .out
             let outThenIn = resp.data.dayOff.Direction == .Out && settings.direction == .in
 
@@ -43,7 +49,7 @@ func handleScan (
             } else {
               safeScreenUpdate(.InvalidDirection)
             }
-          case .failure:
+          case let .failure(err):
             guard
               let data = res.data,
               let resp = try? JSONDecoder().decode(LMFailedResponse.self, from: data)

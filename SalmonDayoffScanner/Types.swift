@@ -40,8 +40,8 @@ struct SDSDayoffTicketResponseData: Codable {
   }
   struct Dayoff: Codable {
     var DayOffType: Type
-    var OutTime: Int? //出门时间
-    var BackTime: Int? //返回时间
+    var OutTime: Date? //出门时间
+    var BackTime: Date? //返回时间
     var Status: Status
     var Direction: LastDirection //最後出入方向
     var UID: String
