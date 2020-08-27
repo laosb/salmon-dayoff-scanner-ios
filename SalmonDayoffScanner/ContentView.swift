@@ -27,29 +27,31 @@ struct ContentView: View {
   }
   var cameraHintValue: (String, String?) {
     switch orientation {
-    case .portrait: return ("请将请假码对准上方摄像头", "arrow.up.circle.fill")
-    case .portraitUpsideDown: return ("请将请假码对准下方摄像头", "arrow.down.circle.fill")
-    case .landscapeRight: return ("请\n将\n请\n假\n码\n对\n准\n左\n侧\n摄\n像\n头", "arrow.left.circle.fill")
-    case .landscapeLeft: return ("请\n将\n请\n假\n码\n对\n准\n右\n侧\n摄\n像\n头", "arrow.right.circle.fill")
-    default: return ("请将请假码对准摄像头", nil)
+    case .portrait: return ("请对准上方摄像头", "arrow.up.circle.fill")
+    case .portraitUpsideDown: return ("请对准下方摄像头", "arrow.down.circle.fill")
+    case .landscapeRight: return ("请\n对\n准\n左\n侧\n摄\n像\n头", "arrow.left.circle.fill")
+    case .landscapeLeft: return ("请\n对\n准\n右\n侧\n摄\n像\n头", "arrow.right.circle.fill")
+    default: return ("请对准摄像头", nil)
     }
   }
 
   var cameraHints: some View {
     Group {
       if orientation == .portraitUpsideDown || orientation == .landscapeLeft {
-        Text(cameraHintValue.0).font(.custom("", size: 30))
+        Text(cameraHintValue.0).font(.system(size: 40, weight: .bold))
       }
       if let icon = cameraHintValue.1 {
         Image(systemName: icon)
           .imageScale(.large)
-          .font(.custom("", size: 30))
+          .font(.system(size: 40, weight: .black))
           .padding()
       }
       if orientation == .portrait || orientation == .landscapeRight {
-        Text(cameraHintValue.0).font(.custom("", size: 30))
+        Text(cameraHintValue.0).font(.system(size: 40, weight: .bold))
       }
-    }.opacity(statusInfo.hideScanning ? 0 : 1)
+    }
+      .opacity(statusInfo.hideScanning ? 0 : 1)
+      .foregroundColor(.orange)
   }
 
   var indicator: some View {
@@ -59,8 +61,8 @@ struct ContentView: View {
 
   var screenStatus: some View {
     Group {
-      Text(statusInfo.title).font(.custom("", size: 70)).fontWeight(.black)
-      Text(statusInfo.desc).font(.custom("", size: 40)).multilineTextAlignment(.center)
+      Text(statusInfo.title).font(.system(size: 70, weight: .black))
+      Text(statusInfo.desc).font(.system(size: 40, weight: .bold)).multilineTextAlignment(.center)
     }.padding()
   }
 
