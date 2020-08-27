@@ -36,6 +36,7 @@
 		2A358B6A24F3BF54008ABD8B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		2A358B6C24F414FC008ABD8B /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		2A358B6E24F42ED6008ABD8B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2AE0E5CC24F7C81A002A4557 /* SalmonDayoffScanner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SalmonDayoffScanner.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +71,7 @@
 		2A30B7C124F3847500856F2D /* SalmonDayoffScanner */ = {
 			isa = PBXGroup;
 			children = (
+				2AE0E5CC24F7C81A002A4557 /* SalmonDayoffScanner.entitlements */,
 				2A30B7C224F3847500856F2D /* AppDelegate.swift */,
 				2A30B7C424F3847500856F2D /* SceneDelegate.swift */,
 				2A30B7C624F3847500856F2D /* ContentView.swift */,
@@ -316,6 +318,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SalmonDayoffScanner/SalmonDayoffScanner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SalmonDayoffScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = LG57TUQ726;
@@ -327,6 +330,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.hduhelp.SalmonDayoffScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -336,6 +340,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SalmonDayoffScanner/SalmonDayoffScanner.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SalmonDayoffScanner/Preview Content\"";
 				DEVELOPMENT_TEAM = LG57TUQ726;
@@ -347,6 +352,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.hduhelp.SalmonDayoffScanner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
