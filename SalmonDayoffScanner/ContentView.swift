@@ -15,6 +15,7 @@ struct ContentView: View {
   @State private var status: SDSScreenStatus = .Initialized
   @State private var settings = SDSSettings.get()
   @State private var synth = AVSpeechSynthesizer()
+  @State private var timer: Timer? = nil
 
   var statusInfo: StatusInfo { getStatusInfoFor(status) }
   var bgColor: Color {
@@ -68,6 +69,10 @@ struct ContentView: View {
       guard !self.statusInfo.hideScanning else { return }
       switch res {
       case let .success(str):
+        if timer != nil {
+          timer?.invalidate()
+          timer = nil
+        }
         synth.stopSpeaking(at: .immediate)
         handleScan(
           str,
@@ -77,7 +82,7 @@ struct ContentView: View {
             self.status = $0
 
             if $0 != .Valid && $0 != .Loading && $0 != .Initialized {
-              Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in self.status = .Initialized }
+              timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in self.status = .Initialized }
             }
 
             switch $0 {
