@@ -84,7 +84,7 @@ struct ContentView: View {
             self.status = $0
 
             if $0 != .Valid && $0 != .Loading && $0 != .Initialized {
-              timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in self.status = .Initialized }
+              timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in self.status = .Initialized }
             }
 
             try? AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord, mode: .default, options: .defaultToSpeaker)

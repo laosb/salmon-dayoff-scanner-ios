@@ -41,7 +41,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
 
         // make sure we only trigger scans once per use
         codeFound = stringValue
-        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [self] _ in
           codeFound = ""
           timer?.invalidate()
           timer = nil
@@ -114,6 +114,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
 
       view.backgroundColor = UIColor.black
       captureSession = AVCaptureSession()
+      captureSession.sessionPreset = .photo
 
       guard let videoCaptureDevice = AVCaptureDevice.default(
         .builtInWideAngleCamera,
