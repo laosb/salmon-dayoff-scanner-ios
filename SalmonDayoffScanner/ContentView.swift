@@ -102,6 +102,7 @@ struct ContentView: View {
 
             let utterance = AVSpeechUtterance(string: voiceHint)
             utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
+            utterance.rate = 0.8 * AVSpeechUtteranceDefaultSpeechRate + 0.2 * AVSpeechUtteranceMaximumSpeechRate
             synth.speak(utterance)
 
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
