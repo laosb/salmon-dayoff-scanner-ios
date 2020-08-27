@@ -85,16 +85,27 @@ struct ContentView: View {
               timer = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in self.status = .Initialized }
             }
 
+            try? AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord, mode: .default, options: .defaultToSpeaker)
+            try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+            var voiceHint = ""
+
             switch $0 {
             case .SystemError, .Unauthorized: settings.stats?.error += 1
             case .CheckInSuccess, .CheckOutSuccess:
               settings.stats?.success += 1
-              synth.speak(.init(string: "验证通过"))
+              voiceHint = "验证通过"
             case .InvalidTicket, .InvalidDirection:
               settings.stats?.fail += 1
-              synth.speak(.init(string: "禁止通行"))
+              voiceHint = "禁止通行"
             default: print("counting nothing")
             }
+
+            let utterance = AVSpeechUtterance(string: voiceHint)
+            utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
+            synth.speak(utterance)
+
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+
             self.settings.persist()
           }
         )
