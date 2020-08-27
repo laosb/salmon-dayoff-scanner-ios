@@ -10,7 +10,7 @@ import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-  @State var orientation: UIDeviceOrientation = UIDevice.current.orientation
+  @State var orientation = UIApplication.shared.statusBarOrientation
 
   @State private var status: SDSScreenStatus = .Initialized
   @State private var settings = SDSSettings.get()
@@ -29,15 +29,15 @@ struct ContentView: View {
     switch orientation {
     case .portrait: return ("请将请假码对准上方摄像头", "arrow.up.circle.fill")
     case .portraitUpsideDown: return ("请将请假码对准下方摄像头", "arrow.down.circle.fill")
-    case .landscapeLeft: return ("请\n将\n请\n假\n码\n对\n准\n左\n侧\n摄\n像\n头", "arrow.left.circle.fill")
-    case .landscapeRight: return ("请\n将\n请\n假\n码\n对\n准\n右\n侧\n摄\n像\n头", "arrow.right.circle.fill")
+    case .landscapeRight: return ("请\n将\n请\n假\n码\n对\n准\n左\n侧\n摄\n像\n头", "arrow.left.circle.fill")
+    case .landscapeLeft: return ("请\n将\n请\n假\n码\n对\n准\n右\n侧\n摄\n像\n头", "arrow.right.circle.fill")
     default: return ("请将请假码对准摄像头", nil)
     }
   }
 
   var cameraHints: some View {
     Group {
-      if orientation == .portraitUpsideDown || orientation == .landscapeRight {
+      if orientation == .portraitUpsideDown || orientation == .landscapeLeft {
         Text(cameraHintValue.0).font(.custom("", size: 30))
       }
       if let icon = cameraHintValue.1 {
@@ -46,7 +46,7 @@ struct ContentView: View {
           .font(.custom("", size: 30))
           .padding()
       }
-      if orientation == .portrait || orientation == .landscapeLeft {
+      if orientation == .portrait || orientation == .landscapeRight {
         Text(cameraHintValue.0).font(.custom("", size: 30))
       }
     }.opacity(statusInfo.hideScanning ? 0 : 1)
@@ -128,7 +128,7 @@ struct ContentView: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
       } else if orientation.isLandscape {
         HStack {
-          if orientation == .landscapeLeft { cameraHints }
+          if orientation == .landscapeRight { cameraHints }
           VStack {
             scanner.frame(width: 400, height: 500, alignment: .center)
             indicator
@@ -136,21 +136,19 @@ struct ContentView: View {
           VStack {
             screenStatus
           }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-          if orientation == .landscapeRight { cameraHints }
+          if orientation == .landscapeLeft { cameraHints }
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
       } else {
         VStack {
-          Text("为方便扫码，请不要平放 iPad。")
-          Text("如必须平放，请先竖起 iPad 并转动来选择一个方向，然后锁定屏幕旋转后再放平。")
+          Text("獲取裝置朝向失敗，非正常 iPad 裝置")
         }
       }
     }
       .background(bgColor)
       .edgesIgnoringSafeArea(.all)
-      .onReceive(NotificationCenter.Publisher(center: .default, name: UIDevice.orientationDidChangeNotification)) { _ in
-        self.orientation = UIDevice.current.orientation
-      }
-
+    .onReceive(NotificationCenter.Publisher(center: .default, name: UIApplication.didChangeStatusBarOrientationNotification)) { _ in
+      self.orientation = UIApplication.shared.statusBarOrientation
+    }
   }
 }
 
