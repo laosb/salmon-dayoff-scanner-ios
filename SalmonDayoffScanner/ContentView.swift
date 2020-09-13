@@ -56,7 +56,7 @@ struct ContentView: View {
 
   var indicator: some View {
     Text("\(settings.name) \(settings.direction == .in ? "入校" : "出校")方向") +
-      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.0.202009132030")
+      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.1.202009132150")
   }
 
   var screenStatus: some View {
@@ -132,12 +132,12 @@ struct ContentView: View {
         HStack {
           if orientation == .landscapeRight { cameraHints }
           VStack {
-            scanner.frame(width: 400, height: 500, alignment: .center)
-            indicator
-          }.padding()
-          VStack {
+            scanner.frame(width: 500, height: 400, alignment: .center)
             screenStatus
-          }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            indicator
+          }
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
           if orientation == .landscapeLeft { cameraHints }
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
       } else {
