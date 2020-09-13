@@ -68,19 +68,27 @@ func handleScan (
     }
   } else {
     if var newSettings = SDSSettings.fromJson(text) {
-      // Scaned a code of settings. Needs to auth first.
-      let laCtx = LAContext()
-      let reason = "如您不知道为何触发此验证，请选择「取消」。"
-      laCtx.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
-        if success {
-          newSettings = SDSSettings.import(newSettings)
-          DispatchQueue.main.async {
-            onSettingsUpdate(newSettings)
-            onScreenUpdate(.ConfigUpdated)
-          }
-        } else {
-          DispatchQueue.main.async {
-            onScreenUpdate(.InvalidTicket)
+      func importSettings () {
+        newSettings = SDSSettings.import(newSettings)
+        DispatchQueue.main.async {
+          onSettingsUpdate(newSettings)
+          onScreenUpdate(.ConfigUpdated)
+        }
+      }
+
+      if SDSSettings.get().token.isEmpty {
+        importSettings()
+      } else {
+        // Scaned a code of settings but token is already done. Needs to auth first.
+        let laCtx = LAContext()
+        let reason = "如您不知道为何触发此验证，请选择「取消」。"
+        laCtx.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, error in
+          if success {
+            importSettings()
+          } else {
+            DispatchQueue.main.async {
+              onScreenUpdate(.InvalidTicket)
+            }
           }
         }
       }

@@ -41,10 +41,10 @@ public struct CodeScannerView: UIViewControllerRepresentable {
 
         // make sure we only trigger scans once per use
         codeFound = stringValue
-        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [self] _ in
-          codeFound = ""
-          timer?.invalidate()
-          timer = nil
+        timer = Timer.scheduledTimer(withTimeInterval: 7, repeats: false) { [self] _ in
+          self.codeFound = ""
+          self.timer?.invalidate()
+          self.timer = nil
         }
       }
     }
@@ -142,7 +142,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
         captureSession.addOutput(metadataOutput)
 
         metadataOutput.setMetadataObjectsDelegate(delegate, queue: DispatchQueue.main)
-        metadataOutput.metadataObjectTypes = delegate?.parent.codeTypes
+        metadataOutput.metadataObjectTypes = delegate?.parent.objectTypes
       } else {
         delegate?.didFail(reason: .badOutput)
         return
@@ -197,12 +197,12 @@ public struct CodeScannerView: UIViewControllerRepresentable {
   }
   #endif
 
-  public let codeTypes: [AVMetadataObject.ObjectType]
+  public let objectTypes: [AVMetadataObject.ObjectType]
   public var simulatedData = ""
   public var completion: (Result<String, ScanError>) -> Void
 
-  public init(codeTypes: [AVMetadataObject.ObjectType], simulatedData: String = "", completion: @escaping (Result<String, ScanError>) -> Void) {
-    self.codeTypes = codeTypes
+  public init(objectTypes: [AVMetadataObject.ObjectType], simulatedData: String = "", completion: @escaping (Result<String, ScanError>) -> Void) {
+    self.objectTypes = objectTypes
     self.simulatedData = simulatedData
     self.completion = completion
   }
@@ -224,7 +224,7 @@ public struct CodeScannerView: UIViewControllerRepresentable {
 
 struct CodeScannerView_Previews: PreviewProvider {
   static var previews: some View {
-    CodeScannerView(codeTypes: [.qr]) { result in
+    CodeScannerView(objectTypes: [.qr]) { result in
       // do nothing
     }
   }

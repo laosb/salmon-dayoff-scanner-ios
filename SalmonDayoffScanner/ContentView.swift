@@ -40,8 +40,8 @@ struct ContentView: View {
       if orientation == .portraitUpsideDown || orientation == .landscapeLeft {
         Text(cameraHintValue.0).font(.system(size: 40, weight: .bold))
       }
-      if let icon = cameraHintValue.1 {
-        Image(systemName: icon)
+      if cameraHintValue.1 != nil {
+        Image(systemName: cameraHintValue.1!)
           .imageScale(.large)
           .font(.system(size: 40, weight: .black))
           .padding()
@@ -56,7 +56,7 @@ struct ContentView: View {
 
   var indicator: some View {
     Text("\(settings.name) \(settings.direction == .in ? "入校" : "出校")方向") +
-    Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error)")
+      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.0.202009132030")
   }
 
   var screenStatus: some View {
@@ -67,24 +67,24 @@ struct ContentView: View {
   }
 
   var scanner: some View {
-    CodeScannerView(codeTypes: [.qr]) { res in
+    CodeScannerView(objectTypes: [.qr]) { res in
       guard !self.statusInfo.hideScanning else { return }
       switch res {
       case let .success(str):
-        if timer != nil {
-          timer?.invalidate()
-          timer = nil
+        if self.timer != nil {
+          self.timer?.invalidate()
+          self.timer = nil
         }
-        synth.stopSpeaking(at: .immediate)
+        self.synth.stopSpeaking(at: .immediate)
         handleScan(
           str,
-          with: settings,
+          with: self.settings,
           onSettingsUpdate: { self.settings = $0 },
           onScreenUpdate: {
             self.status = $0
 
             if $0 != .Valid && $0 != .Loading && $0 != .Initialized {
-              timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in self.status = .Initialized }
+              self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { _ in self.status = .Initialized }
             }
 
             try? AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playAndRecord, mode: .default, options: .defaultToSpeaker)
@@ -92,20 +92,20 @@ struct ContentView: View {
             var voiceHint = ""
 
             switch $0 {
-            case .SystemError, .Unauthorized: settings.stats?.error += 1
+            case .SystemError, .Unauthorized: self.settings.stats?.error += 1
             case .CheckInSuccess, .CheckOutSuccess:
-              settings.stats?.success += 1
+              self.settings.stats?.success += 1
               voiceHint = "验证通过"
             case .InvalidTicket, .InvalidDirection:
-              settings.stats?.fail += 1
+              self.settings.stats?.fail += 1
               voiceHint = "禁止通行"
             default: print("counting nothing")
             }
 
             let utterance = AVSpeechUtterance(string: voiceHint)
             utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            utterance.rate = 0.8 * AVSpeechUtteranceDefaultSpeechRate + 0.2 * AVSpeechUtteranceMaximumSpeechRate
-            synth.speak(utterance)
+            utterance.rate = 0.7 * AVSpeechUtteranceDefaultSpeechRate + 0.3 * AVSpeechUtteranceMaximumSpeechRate
+            self.synth.speak(utterance)
 
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
 
