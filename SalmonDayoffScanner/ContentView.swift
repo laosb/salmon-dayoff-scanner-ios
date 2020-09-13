@@ -56,7 +56,7 @@ struct ContentView: View {
 
   var indicator: some View {
     Text("\(settings.name) \(settings.direction == .in ? "入校" : "出校")方向") +
-      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.1.202009132150")
+      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.2.202009140140")
   }
 
   var screenStatus: some View {
@@ -95,16 +95,16 @@ struct ContentView: View {
             case .SystemError, .Unauthorized: self.settings.stats?.error += 1
             case .CheckInSuccess, .CheckOutSuccess:
               self.settings.stats?.success += 1
-              voiceHint = "验证通过"
+              voiceHint = "通过"
             case .InvalidTicket, .InvalidDirection:
               self.settings.stats?.fail += 1
-              voiceHint = "禁止通行"
+              voiceHint = "禁止"
             default: print("counting nothing")
             }
 
             let utterance = AVSpeechUtterance(string: voiceHint)
             utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-            utterance.rate = 0.7 * AVSpeechUtteranceDefaultSpeechRate + 0.3 * AVSpeechUtteranceMaximumSpeechRate
+            utterance.rate = AVSpeechUtteranceDefaultSpeechRate
             self.synth.speak(utterance)
 
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)

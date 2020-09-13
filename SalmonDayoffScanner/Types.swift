@@ -45,6 +45,7 @@ struct SDSDayoffTicketResponseData: Codable {
     var Status: Status
     var Direction: LastDirection //最後出入方向
     var UID: String
+    var RequestID: String
   }
   struct Request: Codable {
     var StaffID: String //学号
@@ -67,3 +68,5 @@ struct SDSTicketCheckinPayload: Codable {
   var ticket: String
   var type: Direction
 }
+
+typealias SDSDayoffTicketCheckinResponse = LMResponse<String>

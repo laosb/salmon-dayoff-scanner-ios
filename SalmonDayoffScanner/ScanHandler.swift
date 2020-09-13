@@ -12,6 +12,8 @@ import LocalAuthentication
 
 let apiBaseUrl = "https://[REDACTED]"
 
+var lastSuccessRequestId: String = ""
+
 func handleScan (
   _ text: String,
   with settings: SDSSettings,
@@ -32,13 +34,16 @@ func handleScan (
       let decoder = JSONDecoder()
       decoder.dateDecodingStrategy = .iso8601
 
-      AF.request("\(apiBaseUrl)/workflow/dayoff/management/ticket?uid=\(ticket)", headers: headers)
+      AF.request("\(apiBaseUrl)/workflow/dayoff/management/ticket?uid=\(ticket)", headers: headers) { $0.timeoutInterval = 5 }
         .validate().responseDecodable(
           of: SDSDayoffTicketResponse.self,
           decoder: decoder
         ) { res in
           switch res.result {
           case let .success(resp):
+            // Possibly the ticket refreshed.
+//            guard resp.data.dayOff.RequestID != lastSuccessRequestId else { return }
+
             let noRecord = resp.data.dayOff.Direction == .NoRecord
             let inThenOut = resp.data.dayOff.Direction == .In && settings.direction == .out
             let outThenIn = resp.data.dayOff.Direction == .Out && settings.direction == .in
@@ -104,15 +109,24 @@ func ticketCheckin (
   headers: HTTPHeaders,
   onScreenUpdate: @escaping (SDSScreenStatus) -> Void
 ) {
+  let decoder = JSONDecoder()
+  decoder.dateDecodingStrategy = .iso8601
+
   AF.request(
     "\(apiBaseUrl)/workflow/dayoff/management/checkin?ticketId=\(ticket)",
     method: .post,
     parameters: SDSTicketCheckinPayload(ticket: ticket, type: settings.direction),
     encoder: JSONParameterEncoder(),
     headers: headers
-  ).validate().response { res in
+  ) { $0.timeoutInterval = 5 }
+    .validate().responseDecodable(
+      of: SDSDayoffTicketCheckinResponse.self,
+      decoder: decoder
+    ) { res in
     switch res.result {
-    case .success: onScreenUpdate(settings.direction == .out ? .CheckOutSuccess : .CheckInSuccess)
+    case let .success(resp):
+      lastSuccessRequestId = resp.data
+      onScreenUpdate(settings.direction == .out ? .CheckOutSuccess : .CheckInSuccess)
     case .failure: onScreenUpdate(.SystemError)
     }
   }
