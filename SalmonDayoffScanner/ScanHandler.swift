@@ -25,52 +25,10 @@ func handleScan (
     let ticket = String(text[Range(res.range(at: 1), in: text)!])
     let headers: HTTPHeaders = ["Authorization": "token \(settings.token)"]
 
-    onScreenUpdate(.Loading)
-    DispatchQueue.global(qos: .userInitiated).async {
-      func safeScreenUpdate (_ status: SDSScreenStatus) {
-        DispatchQueue.main.async { onScreenUpdate(status) }
-      }
-
-      let decoder = JSONDecoder()
-      decoder.dateDecodingStrategy = .iso8601
-
-      AF.request("\(apiBaseUrl)/workflow/dayoff/management/ticket?uid=\(ticket)", headers: headers) { $0.timeoutInterval = 5 }
-        .validate().responseDecodable(
-          of: SDSDayoffTicketResponse.self,
-          decoder: decoder
-        ) { res in
-          switch res.result {
-          case let .success(resp):
-            // Possibly the ticket refreshed.
-//            guard resp.data.dayOff.RequestID != lastSuccessRequestId else { return }
-
-            let noRecord = resp.data.dayOff.Direction == .NoRecord
-            let inThenOut = resp.data.dayOff.Direction == .In && settings.direction == .out
-            let outThenIn = resp.data.dayOff.Direction == .Out && settings.direction == .in
-
-            if noRecord || inThenOut || outThenIn {
-              safeScreenUpdate(.Valid)
-              ticketCheckin(ticket, with: settings, headers: headers, onScreenUpdate: safeScreenUpdate)
-            } else {
-              safeScreenUpdate(.InvalidDirection)
-            }
-          case .failure:
-            guard
-              let data = res.data,
-              let resp = try? JSONDecoder().decode(LMFailedResponse.self, from: data)
-            else {
-              safeScreenUpdate(.SystemError)
-              return
-            }
-
-            switch resp.error {
-            case 40100, 40101, 40302: safeScreenUpdate(.Unauthorized)
-            case 40306, 40314: safeScreenUpdate(.InvalidTicket)
-            default: safeScreenUpdate(.SystemError)
-            }
-          }
-        }
+    func safeScreenUpdate (_ status: SDSScreenStatus) {
+      DispatchQueue.main.async { onScreenUpdate(status) }
     }
+    ticketCheckin(ticket, with: settings, headers: headers, onScreenUpdate: safeScreenUpdate)
   } else {
     if var newSettings = SDSSettings.fromJson(text) {
       func importSettings () {
@@ -127,7 +85,21 @@ func ticketCheckin (
     case let .success(resp):
       lastSuccessRequestId = resp.data
       onScreenUpdate(settings.direction == .out ? .CheckOutSuccess : .CheckInSuccess)
-    case .failure: onScreenUpdate(.SystemError)
+    case .failure:
+      guard
+        let data = res.data,
+        let resp = try? JSONDecoder().decode(LMFailedResponse.self, from: data)
+      else {
+        onScreenUpdate(.SystemError)
+        return
+      }
+
+      switch resp.error {
+      case 40100, 40101, 40302: onScreenUpdate(.Unauthorized)
+      case 40306, 40314: onScreenUpdate(.InvalidTicket)
+      case 40316: onScreenUpdate(.InvalidDirection)
+      default: onScreenUpdate(.SystemError)
+      }
     }
   }
 }

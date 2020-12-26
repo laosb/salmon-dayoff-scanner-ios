@@ -56,7 +56,7 @@ struct ContentView: View {
 
   var indicator: some View {
     Text("\(settings.name) \(settings.direction == .in ? "入校" : "出校")方向") +
-      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.2.202009140140")
+      Text(" · 成功 \(settings.stats!.success) | 失败 \(settings.stats!.fail) | 错误 \(settings.stats!.error) | v1.4.202012261950")
   }
 
   var screenStatus: some View {
